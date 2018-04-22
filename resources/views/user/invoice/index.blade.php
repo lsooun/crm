@@ -1,0 +1,131 @@
+@extends('layouts.user')
+
+{{-- Web site Title --}}
+@section('title')
+    {{ $title }}
+@stop
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('css/c3.min.css') }}">
+@stop
+{{-- Content --}}
+@section('content')
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>{{trans('invoice.invoices_details')}}</h4>
+                    <hr>
+                    <div id="invoice-chart" class="index-invo"></div>
+                </div>
+                <div class="col-md-6">
+                    <ul class="list-inline invoice-list">
+                        <li>
+                            <div class="txt-info">{{trans('invoice.invoices_total')}}</div>
+                            <h5 class="number c-red">{{ (Settings::get('currency_position')=='left')?
+                        Settings::get('currency').' '.$invoices_total_collection:
+                        $invoices_total_collection.' '.Settings::get('currency') }} </h5>
+                        </li>
+                        <li>
+                            <div class="txt">{{trans('invoice.open_invoice')}}</div>
+                            <h5 class="number c-green">{{ (Settings::get('currency_position')=='left')?
+                        Settings::get('currency').' '.$open_invoice_total:
+                        $open_invoice_total.' '.Settings::get('currency') }} </h5>
+                        </li>
+                        <li>
+                            <div class="txt-dang">{{trans('invoice.overdue_invoice')}}</div>
+                            <h5 class="number c-red">{{ (Settings::get('currency_position')=='left')?
+                        Settings::get('currency').' '.$overdue_invoices_total:
+                        $overdue_invoices_total.' '.Settings::get('currency')}} </h5>
+                        </li>
+                        <li>
+                            <div class="txt-succ">{{trans('invoice.paid_invoice')}}</div>
+                            <h5 class="number c-blue">{{ (Settings::get('currency_position')=='left')?
+                        Settings::get('currency').' '.$paid_invoices_total:
+                        $paid_invoices_total.' '.Settings::get('currency') }} </h5>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="page-header clearfix">
+                <div class="pull-right">
+                    <a href="{{ url('invoice_delete_list') }}" class="btn btn-primary m-b-10">{{ trans('invoice.delete_list') }}</a>
+                    <a href="{{ url('paid_invoice') }}" class="btn btn-primary m-b-10">{{ trans('invoice.paid_invoice') }}</a>
+                    @if($user_data->hasAccess(['invoices.write']) || $user_data->inRole('admin'))
+                        <a href="{{ $type.'/create' }}" class="btn btn-primary m-b-10">
+                            <i class="fa fa-plus-circle"></i> {{ trans('invoice.new') }}</a>
+                    @endif
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <i class="material-icons">receipt</i>
+                        {{ $title }}
+                    </h4>
+                    <span class="pull-right">
+                                    <i class="fa fa-fw fa-chevron-up clickable"></i>
+                                    <i class="fa fa-fw fa-times removepanel clickable"></i>
+                                </span>
+                </div>
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table id="data" class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th>{{ trans('invoice.invoice_number') }}</th>
+                                <th>{{ trans('invoice.invoice_date') }}</th>
+                                <th>{{ trans('invoice.agent_name') }}</th>
+                                <th>{{ trans('invoice.due_date') }}</th>
+                                <th>{{ trans('invoice.total') }}</th>
+                                <th>{{ trans('invoice.unpaid_amount') }}</th>
+                                <th>{{ trans('invoice.status') }}</th>
+                                <th>{{ trans('invoice.expired') }}</th>
+                                <th>{{ trans('table.actions') }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@stop
+
+{{-- Scripts --}}
+@section('scripts')
+    <script type="text/javascript" src="{{ asset('js/d3.v3.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/d3.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/c3.min.js')}}"></script>
+    <script>
+
+      /*invoice chart*/
+
+      var chart = c3.generate({
+        bindto: '#invoice-chart',
+        data: {
+          columns: [
+            ['Open invoice', {{$open_invoice_total}}],
+            ['Overdue invoice', {{$overdue_invoices_total}}],
+            ['Paid invoice', {{$paid_invoices_total}}]
+          ],
+          type: 'donut',
+          colors: {
+            'Open invoice': '#4FC1E9',
+            'Overdue invoice': '#FD9883',
+            'Paid invoice': '#A0D468'
+          }
+        }
+
+      });
+      $(".sidebar-toggle").on("click", function () {
+        setTimeout(function () {
+          chart.resize();
+        }, 200)
+      });
+      //c3 customisation
+
+      /* invoice chart end*/
+    </script>
+@stop
