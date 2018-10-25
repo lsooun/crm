@@ -7,12 +7,12 @@
                     <br>
                     {!! Form::open(array('url' => url('signin'), 'method' => 'post', 'name' => 'form')) !!}
                     <div class="form-group {{ $errors->has('email') ? 'has-error' : '' }}">
-                        {!! Form::label(trans('auth.email')) !!} :
+                        {!! Form::label('email', trans('auth.email')) !!} :
                         <span>{{ $errors->first('email', ':message') }}</span>
                         {!! Form::email('email', null, array('class' => 'form-control', 'required'=>'required', 'placeholder' => trans('auth.email') )) !!}
                     </div>
                     <div class="form-group {{ $errors->has('password') ? 'has-error' : '' }}">
-                        {!! Form::label(trans('auth.password')) !!} :
+                        {!! Form::label('password', trans('auth.password')) !!} :
                         <span>{{ $errors->first('password', ':message') }}</span>
                         {!! Form::password('password', array('class' => 'form-control', 'required'=>'required', 'placeholder' => trans('auth.password'))) !!}
                     </div>
